@@ -582,9 +582,9 @@ static void gcall_or_jmp(int is_jmp)
 
 #ifdef TCC_TARGET_PE
 
-#define REGN 4
+#define REGN 3
 static const uint8_t arg_regs[] = {
-    TREG_RCX, TREG_RDX, TREG_R8, TREG_R9
+    TREG_RCX, TREG_RDX, TREG_R8/* , TREG_R9 */
 };
 
 static int func_scratch;
@@ -820,9 +820,9 @@ static void gadd_sp(int val)
     }
 }
 
-#define REGN 6
+#define REGN 5
 static const uint8_t arg_regs[REGN] = {
-    TREG_RDI, TREG_RSI, TREG_RDX, TREG_RCX, TREG_R8, TREG_R9
+    TREG_RDI, TREG_RSI, TREG_RDX, TREG_RCX, TREG_R8/* , TREG_R9 */
 };
 
 /* Generate function call. The function address is pushed first, then
