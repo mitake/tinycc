@@ -269,4 +269,8 @@ local_clean:
 distclean: clean
 	rm -vf config.h config.mak config.texi tcc.1 tcc-doc.html
 
+cscope:
+	find . -name "*.[ch]" > cscope.files
+	cscope -b -q
+
 endif # ifeq ($(TOP),.)
