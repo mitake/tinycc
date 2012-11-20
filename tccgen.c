@@ -1583,6 +1583,20 @@ static void check_comparison_pointer_types(SValue *p1, SValue *p2, int op)
     }
 }
 
+ST_FUNC void gen_struct_cmp(void)
+{
+	Sym *s;
+
+	s = vtop[-1].type.ref;
+	/* s == vtop[0].type.ref must be checked at caller site */
+
+	while ((s = s->next) != NULL) {
+		printf("s->v: %d\n", s->v);
+	}
+
+	tcc_error("not implemented yet");
+}
+
 /* generic gen_op: handles types problems */
 ST_FUNC void gen_op(int op)
 {
@@ -1593,7 +1607,7 @@ ST_FUNC void gen_op(int op)
     t2 = vtop[0].type.t;
     bt1 = t1 & VT_BTYPE;
     bt2 = t2 & VT_BTYPE;
-        
+
     if (bt1 == VT_PTR || bt2 == VT_PTR) {
         /* at least one operand is a pointer */
         /* relationnal op: must be both pointers */
@@ -1701,7 +1715,13 @@ ST_FUNC void gen_op(int op)
             t |= VT_UNSIGNED;
         goto std_op;
     } else if (bt1 == VT_STRUCT || bt2 == VT_STRUCT) {
-        tcc_error("comparison of struct");
+	    if (!(bt1 == VT_STRUCT && bt2 == VT_STRUCT))
+		    tcc_error("struct cannot be compared with scalar typed values");
+
+	    if (vtop[0].type.ref != vtop[-1].type.ref)
+		    tcc_error("comparison between different struct typed values is not allowed");
+
+	    gen_struct_cmp();
     } else {
         /* integer operations */
         t = VT_INT;
@@ -3067,7 +3087,7 @@ static int parse_btype(CType *type, AttributeDef *ad)
     }
 the_end:
     if ((t & (VT_SIGNED|VT_UNSIGNED)) == (VT_SIGNED|VT_UNSIGNED))
-        tcc_error("signed and unsigned modifier");
+	    tcc_error("signed and unsigned modifier, type_found: %d", type_found);
     if (tcc_state->char_is_unsigned) {
         if ((t & (VT_SIGNED|VT_UNSIGNED|VT_BTYPE)) == VT_BYTE)
             t |= VT_UNSIGNED;
